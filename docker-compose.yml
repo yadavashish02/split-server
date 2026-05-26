@@ -1,0 +1,17 @@
+services:
+  server:
+    build: .
+    container_name: split-server
+    ports:
+      - "8000:8000"
+    volumes:
+      - split-data:/app/data
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=sqlite:///app/data/split.db
+
+volumes:
+  split-data:
+    driver: local

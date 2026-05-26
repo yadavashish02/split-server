@@ -1,0 +1,7 @@
+target/
+**/*.rs.bk
+split.db
+split.db-shm
+split.db-wal
+.env
+.git/
