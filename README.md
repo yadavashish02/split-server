@@ -14,21 +14,6 @@ A Rust-based GraphQL Splitwise clone server. Built using clean Domain-Driven Des
 - **GraphQL Library**: [async-graphql](https://github.com/async-graphql/async-graphql)
 - **Database Engine & ORM/Query Builder**: [SQLx](https://github.com/launchbadge/sqlx) (SQLite driver)
 - **Runtime**: [Tokio](https://github.com/tokio-rs/tokio)
-
-## 📁 Directory Structure
-```text
-split-server/
-├── migrations/          # SQL database migrations
-├── src/
-│   ├── main.rs          # Server entry point and configuration
-│   ├── db/              # Database pool setup
-│   ├── domain/          # Pure core domain models and interfaces (DDD)
-│   └── repository/      # Core SQL database implementations of repository interfaces
-├── Cargo.toml           # Rust package configuration
-├── Dockerfile           # Docker configuration
-└── docker-compose.yml   # Docker compose configuration
-```
-
 ## ⚙️ Getting Started
 
 ### Prerequisites
