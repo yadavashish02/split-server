@@ -7,3 +7,6 @@
 *.db-wal
 *.sqlite
 *.sqlite3
+
+# Generated docs
+*.puml
