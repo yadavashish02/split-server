@@ -85,6 +85,8 @@ CREATE TABLE expenses (
     split_type TEXT NOT NULL,
     category_id BLOB,
     created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    updated_at INTEGER,
+    deleted_at INTEGER,
     FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE,
     FOREIGN KEY (paid_by) REFERENCES users(id),
     FOREIGN KEY (currency) REFERENCES currencies(code),
@@ -178,7 +180,9 @@ CREATE TABLE invites (
     token TEXT NOT NULL UNIQUE,
     expires_at INTEGER,
     created_at INTEGER NOT NULL DEFAULT (unixepoch()),
-    FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
+    FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE,
+    FOREIGN KEY (invited_by) REFERENCES users(id),
+    FOREIGN KEY (invited_user_id) REFERENCES users(id)
 );
 
 -- =========================================================
@@ -217,6 +221,42 @@ BEGIN
     DO UPDATE SET net_amount = net_amount + NEW.amount;
 END;
 
+CREATE TRIGGER ledger_update_update_net
+AFTER UPDATE OF amount ON user_balances
+BEGIN
+    UPDATE group_member_net_balances
+    SET net_amount = net_amount - (NEW.amount - OLD.amount),
+        updated_at = unixepoch()
+    WHERE group_id = NEW.group_id
+      AND user_id = NEW.from_user
+      AND currency = NEW.currency;
+
+    UPDATE group_member_net_balances
+    SET net_amount = net_amount + (NEW.amount - OLD.amount),
+        updated_at = unixepoch()
+    WHERE group_id = NEW.group_id
+      AND user_id = NEW.to_user
+      AND currency = NEW.currency;
+END;
+
+CREATE TRIGGER ledger_delete_update_net
+AFTER DELETE ON user_balances
+BEGIN
+    UPDATE group_member_net_balances
+    SET net_amount = net_amount + OLD.amount,
+        updated_at = unixepoch()
+    WHERE group_id = OLD.group_id
+      AND user_id = OLD.from_user
+      AND currency = OLD.currency;
+
+    UPDATE group_member_net_balances
+    SET net_amount = net_amount - OLD.amount,
+        updated_at = unixepoch()
+    WHERE group_id = OLD.group_id
+      AND user_id = OLD.to_user
+      AND currency = OLD.currency;
+END;
+
 CREATE TRIGGER cleanup_zero_net
 AFTER UPDATE ON group_member_net_balances
 WHEN NEW.net_amount = 0
@@ -225,6 +265,18 @@ BEGIN
     WHERE group_id = NEW.group_id
       AND user_id = NEW.user_id
       AND currency = NEW.currency;
+END;
+
+-- =========================================================
+-- TRIGGERS → PAYMENT SETTLES PAIRWISE BALANCE
+-- =========================================================
+CREATE TRIGGER payment_settle_balance
+AFTER INSERT ON payments
+BEGIN
+    INSERT INTO user_balances (group_id, from_user, to_user, currency, amount)
+    VALUES (NEW.group_id, NEW.paid_to, NEW.paid_by, NEW.currency, NEW.amount)
+    ON CONFLICT(group_id, from_user, to_user, currency)
+    DO UPDATE SET amount = amount + NEW.amount;
 END;
 
 -- =========================================================

@@ -6,6 +6,8 @@ pub type UserId = uuid::Uuid;
 #[derive(Debug, Clone)]
 pub struct User {
     pub id: UserId,
+    pub username: String,
+    pub created_at: Timestamp,
 }
 
 #[async_trait]

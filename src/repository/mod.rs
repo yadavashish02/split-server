@@ -1,5 +1,7 @@
 pub mod activity_repo;
 pub mod balance_repo;
+pub mod category_repo;
+pub mod currency_repo;
 pub mod expense_repo;
 pub mod group_repo;
 pub mod invite_repo;

@@ -1,7 +1,5 @@
-use async_trait::async_trait;
 use std::sync::Arc;
 
-use super::types::*;
 use super::user::*;
 use super::group::*;
 use super::expense::*;
@@ -9,8 +7,9 @@ use super::payment::*;
 use super::balance::*;
 use super::invite::*;
 use super::activity::*;
+use super::category::*;
+use super::currency::*;
 
-#[async_trait]
 pub trait RepositoryProvider:
     UserRepository
     + GroupRepository
@@ -19,6 +18,8 @@ pub trait RepositoryProvider:
     + BalanceRepository
     + InviteRepository
     + ActivityRepository
+    + CategoryRepository
+    + CurrencyRepository
 {}
 
 pub type DynRepos = Arc<dyn RepositoryProvider>;
