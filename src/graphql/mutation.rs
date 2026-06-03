@@ -1,16 +1,16 @@
-use async_graphql::{Object, Context, Result, InputObject, ID};
+use super::types::expense::ExpenseType;
+use super::types::group::GroupType;
+use super::types::invite::InviteType;
+use super::types::payment::PaymentType;
+use super::types::user::UserType;
+use crate::domain::balance::BalanceRepository;
+use crate::domain::expense::{Expense, ExpenseRepository, ExpenseSplit, SplitType};
+use crate::domain::group::{Group, GroupRepository, GroupRole};
+use crate::domain::invite::{Invite, InviteRepository, InviteStatus};
+use crate::domain::payment::{Payment, PaymentRepository};
 use crate::domain::provider::DynRepos;
 use crate::domain::user::{User, UserRepository};
-use crate::domain::group::{Group, GroupRole, GroupRepository};
-use crate::domain::expense::{Expense, ExpenseSplit, SplitType, ExpenseRepository};
-use crate::domain::payment::{Payment, PaymentRepository};
-use crate::domain::invite::{Invite, InviteStatus, InviteRepository};
-use crate::domain::balance::BalanceRepository;
-use super::types::user::UserType;
-use super::types::group::GroupType;
-use super::types::expense::ExpenseType;
-use super::types::payment::PaymentType;
-use super::types::invite::InviteType;
+use async_graphql::{Context, ID, InputObject, Object, Result};
 
 pub struct MutationRoot;
 
@@ -74,11 +74,7 @@ pub struct InviteMemberInput {
 
 #[Object]
 impl MutationRoot {
-    async fn create_user(
-        &self,
-        ctx: &Context<'_>,
-        input: CreateUserInput,
-    ) -> Result<UserType> {
+    async fn create_user(&self, ctx: &Context<'_>, input: CreateUserInput) -> Result<UserType> {
         let repos = ctx.data::<DynRepos>()?;
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)?
@@ -92,22 +88,14 @@ impl MutationRoot {
         Ok(UserType::from(created))
     }
 
-    async fn create_group(
-        &self,
-        ctx: &Context<'_>,
-        input: CreateGroupInput,
-    ) -> Result<GroupType> {
+    async fn create_group(&self, ctx: &Context<'_>, input: CreateGroupInput) -> Result<GroupType> {
         let repos = ctx.data::<DynRepos>()?;
         // TODO: Extract user_id from auth context.
         // For now, this will need a `created_by` field in the input or auth middleware.
         return Err("Not implemented: auth context required for created_by".into());
     }
 
-    async fn add_expense(
-        &self,
-        ctx: &Context<'_>,
-        input: AddExpenseInput,
-    ) -> Result<ExpenseType> {
+    async fn add_expense(&self, ctx: &Context<'_>, input: AddExpenseInput) -> Result<ExpenseType> {
         let repos = ctx.data::<DynRepos>()?;
 
         let group_id: uuid::Uuid = input.group_id.parse()?;
@@ -140,11 +128,7 @@ impl MutationRoot {
         return Err("Not implemented: auth context required for invited_by".into());
     }
 
-    async fn accept_invite(
-        &self,
-        ctx: &Context<'_>,
-        token: String,
-    ) -> Result<bool> {
+    async fn accept_invite(&self, ctx: &Context<'_>, token: String) -> Result<bool> {
         let repos = ctx.data::<DynRepos>()?;
         repos.accept_invite(&token).await?;
         Ok(true)
@@ -168,7 +152,11 @@ impl MutationRoot {
             "exact" => SplitType::Exact,
             "percentage" => SplitType::Percentage,
             "shares" => SplitType::Shares,
-            other => return Err(async_graphql::Error::new(format!("Invalid split_type: {other}"))),
+            other => {
+                return Err(async_graphql::Error::new(format!(
+                    "Invalid split_type: {other}"
+                )));
+            }
         };
 
         let now = std::time::SystemTime::now()
@@ -189,24 +177,24 @@ impl MutationRoot {
             deleted_at: None,
         };
 
-        let splits: Vec<ExpenseSplit> = input.splits.into_iter().map(|s| {
-            let user_id: uuid::Uuid = s.user_id.to_string().parse().unwrap();
-            ExpenseSplit {
-                expense_id,
-                user_id,
-                amount_owed: s.amount_owed,
-            }
-        }).collect();
+        let splits: Vec<ExpenseSplit> = input
+            .splits
+            .into_iter()
+            .map(|s| {
+                let user_id: uuid::Uuid = s.user_id.to_string().parse().unwrap();
+                ExpenseSplit {
+                    expense_id,
+                    user_id,
+                    amount_owed: s.amount_owed,
+                }
+            })
+            .collect();
 
         let updated = ExpenseRepository::update_expense(repos.as_ref(), expense, splits).await?;
         Ok(ExpenseType::from(updated))
     }
 
-    async fn delete_expense(
-        &self,
-        ctx: &Context<'_>,
-        id: ID,
-    ) -> Result<bool> {
+    async fn delete_expense(&self, ctx: &Context<'_>, id: ID) -> Result<bool> {
         let repos = ctx.data::<DynRepos>()?;
         let expense_id: uuid::Uuid = id.parse()?;
         ExpenseRepository::delete_expense(repos.as_ref(), expense_id).await?;

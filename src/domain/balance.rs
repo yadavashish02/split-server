@@ -1,8 +1,8 @@
-use async_trait::async_trait;
 use super::types::*;
 use crate::domain::expense::{Expense, ExpenseSplit};
 use crate::domain::group::GroupId;
 use crate::domain::user::UserId;
+use async_trait::async_trait;
 
 /// Pairwise balance: from_user owes to_user in a specific currency.
 #[derive(Debug, Clone)]
@@ -26,16 +26,10 @@ pub struct NetBalance {
 #[async_trait]
 pub trait BalanceRepository: Send + Sync {
     /// Returns materialized net balances for all members of a group.
-    async fn get_group_balances(
-        &self,
-        group_id: GroupId,
-    ) -> RepoResult<Vec<NetBalance>>;
+    async fn get_group_balances(&self, group_id: GroupId) -> RepoResult<Vec<NetBalance>>;
 
     /// Returns pairwise balances between all members of a group.
-    async fn get_pairwise_balances(
-        &self,
-        group_id: GroupId,
-    ) -> RepoResult<Vec<PairwiseBalance>>;
+    async fn get_pairwise_balances(&self, group_id: GroupId) -> RepoResult<Vec<PairwiseBalance>>;
 
     /// Inserts pairwise ledger entries for an expense.
     /// Net balances are updated automatically via DB triggers.

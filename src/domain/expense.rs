@@ -1,8 +1,8 @@
-use async_trait::async_trait;
 use super::types::*;
 use crate::domain::category::CategoryId;
 use crate::domain::group::GroupId;
 use crate::domain::user::UserId;
+use async_trait::async_trait;
 
 pub type ExpenseId = uuid::Uuid;
 

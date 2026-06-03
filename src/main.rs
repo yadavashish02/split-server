@@ -4,7 +4,7 @@ mod graphql;
 mod repository;
 
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
-use axum::{Router, routing::get, extract::State};
+use axum::{Router, extract::State, routing::get};
 use dotenvy::dotenv;
 use std::env;
 

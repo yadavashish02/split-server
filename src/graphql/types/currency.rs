@@ -1,5 +1,5 @@
-use async_graphql::Object;
 use crate::domain::currency::Currency;
+use async_graphql::Object;
 
 pub struct CurrencyType(pub Currency);
 

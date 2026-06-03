@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-use std::sync::Arc;
-use async_graphql::dataloader::Loader;
 use crate::domain::provider::DynRepos;
 use crate::domain::user::{User, UserId, UserRepository};
+use async_graphql::dataloader::Loader;
+use std::collections::HashMap;
+use std::sync::Arc;
 
 pub struct UserLoader {
     repos: DynRepos,
@@ -21,7 +21,8 @@ impl Loader<UserId> for UserLoader {
     fn load(
         &self,
         keys: &[UserId],
-    ) -> impl std::future::Future<Output = Result<HashMap<UserId, Self::Value>, Self::Error>> + Send {
+    ) -> impl std::future::Future<Output = Result<HashMap<UserId, Self::Value>, Self::Error>> + Send
+    {
         let repos = self.repos.clone();
         let keys = keys.to_vec();
         async move {

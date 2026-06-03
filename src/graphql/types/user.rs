@@ -1,8 +1,8 @@
-use async_graphql::{Object, Context, Result, ID};
+use super::group::GroupType;
+use crate::domain::group::GroupRepository;
 use crate::domain::provider::DynRepos;
 use crate::domain::user::User;
-use crate::domain::group::GroupRepository;
-use super::group::GroupType;
+use async_graphql::{Context, ID, Object, Result};
 
 pub struct UserType(pub User);
 

@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
-use super::user::*;
-use super::group::*;
-use super::expense::*;
-use super::payment::*;
-use super::balance::*;
-use super::invite::*;
 use super::activity::*;
+use super::balance::*;
 use super::category::*;
 use super::currency::*;
+use super::expense::*;
+use super::group::*;
+use super::invite::*;
+use super::payment::*;
+use super::user::*;
 
 pub trait RepositoryProvider:
     UserRepository
@@ -20,6 +20,7 @@ pub trait RepositoryProvider:
     + ActivityRepository
     + CategoryRepository
     + CurrencyRepository
-{}
+{
+}
 
 pub type DynRepos = Arc<dyn RepositoryProvider>;

@@ -1,8 +1,8 @@
-use async_graphql::{Object, Context, Result, ID};
-use crate::domain::provider::DynRepos;
-use crate::domain::expense::{Expense, ExpenseSplit, SplitType};
-use crate::domain::user::UserRepository;
 use super::user::UserType;
+use crate::domain::expense::{Expense, ExpenseSplit, SplitType};
+use crate::domain::provider::DynRepos;
+use crate::domain::user::UserRepository;
+use async_graphql::{Context, ID, Object, Result};
 
 // ── ExpenseType ────────────────────────────────────────────
 
