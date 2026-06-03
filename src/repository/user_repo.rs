@@ -1,8 +1,7 @@
-use crate::domain::user::*;
 use crate::domain::types::*;
+use crate::domain::user::*;
 use async_trait::async_trait;
 use sqlx::SqlitePool;
-
 
 pub struct SqlUserRepository {
     pool: SqlitePool,
@@ -36,25 +35,22 @@ impl From<UserRow> for User {
 #[async_trait]
 impl UserRepository for SqlUserRepository {
     async fn create_user(&self, user: User) -> RepoResult<User> {
-        sqlx::query(
-            "INSERT INTO users (id, username, created_at) VALUES (?, ?, ?)",
-        )
-        .bind(user.id)
-        .bind(&user.username)
-        .bind(user.created_at)
-        .execute(&self.pool)
-        .await?;
+        sqlx::query("INSERT INTO users (id, username, created_at) VALUES (?, ?, ?)")
+            .bind(user.id)
+            .bind(&user.username)
+            .bind(user.created_at)
+            .execute(&self.pool)
+            .await?;
 
         Ok(user)
     }
 
     async fn get_user(&self, user_id: UserId) -> RepoResult<Option<User>> {
-        let row = sqlx::query_as::<_, UserRow>(
-            "SELECT id, username, created_at FROM users WHERE id = ?",
-        )
-        .bind(user_id)
-        .fetch_optional(&self.pool)
-        .await?;
+        let row =
+            sqlx::query_as::<_, UserRow>("SELECT id, username, created_at FROM users WHERE id = ?")
+                .bind(user_id)
+                .fetch_optional(&self.pool)
+                .await?;
 
         Ok(row.map(User::from))
     }

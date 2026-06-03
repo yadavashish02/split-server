@@ -1,5 +1,5 @@
-use async_graphql::Object;
 use crate::domain::category::Category;
+use async_graphql::Object;
 
 pub struct CategoryType(pub Category);
 

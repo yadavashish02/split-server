@@ -1,7 +1,7 @@
-use async_trait::async_trait;
 use super::types::*;
 use crate::domain::group::GroupId;
 use crate::domain::user::UserId;
+use async_trait::async_trait;
 
 pub type PaymentId = uuid::Uuid;
 
@@ -22,5 +22,10 @@ pub trait PaymentRepository: Send + Sync {
     /// Inserts payment. The payment_settle_balance trigger
     /// automatically updates user_balances and net_balances.
     async fn create_payment(&self, payment: Payment) -> RepoResult<Payment>;
-    async fn get_group_payments(&self, group_id: GroupId, limit: i64, created_before: Option<Timestamp>) -> RepoResult<Vec<Payment>>;
+    async fn get_group_payments(
+        &self,
+        group_id: GroupId,
+        limit: i64,
+        created_before: Option<Timestamp>,
+    ) -> RepoResult<Vec<Payment>>;
 }

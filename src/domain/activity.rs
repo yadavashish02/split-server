@@ -1,7 +1,7 @@
-use async_trait::async_trait;
 use super::types::*;
 use crate::domain::group::GroupId;
 use crate::domain::user::UserId;
+use async_trait::async_trait;
 
 pub type ActivityId = uuid::Uuid;
 

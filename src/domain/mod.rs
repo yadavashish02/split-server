@@ -1,5 +1,3 @@
-pub mod types;
-pub mod provider;
 pub mod activity;
 pub mod balance;
 pub mod category;
@@ -8,4 +6,6 @@ pub mod expense;
 pub mod group;
 pub mod invite;
 pub mod payment;
+pub mod provider;
+pub mod types;
 pub mod user;

@@ -1,13 +1,13 @@
-use async_graphql::{Object, Context, Result, ID};
-use crate::domain::provider::DynRepos;
-use crate::domain::user::UserRepository;
-use crate::domain::group::GroupRepository;
-use crate::domain::category::CategoryRepository;
-use crate::domain::currency::CurrencyRepository;
-use super::types::user::UserType;
-use super::types::group::GroupType;
 use super::types::category::CategoryType;
 use super::types::currency::CurrencyType;
+use super::types::group::GroupType;
+use super::types::user::UserType;
+use crate::domain::category::CategoryRepository;
+use crate::domain::currency::CurrencyRepository;
+use crate::domain::group::GroupRepository;
+use crate::domain::provider::DynRepos;
+use crate::domain::user::UserRepository;
+use async_graphql::{Context, ID, Object, Result};
 
 pub struct QueryRoot;
 
